@@ -4,7 +4,7 @@ import tomllib
 from pathlib import Path
 from typing import Any, List, Literal, Optional
 
-_PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent.parent
+_PROJECT_ROOT = Path(__file__).resolve().parents[3]
 _DEFAULT_LOGGING_CONFIG = _PROJECT_ROOT / "config" / "logging.toml"
 _LOGS_DIR = _PROJECT_ROOT / "logs"
 
@@ -27,27 +27,38 @@ class ConditionalFormatter(logging.Formatter):
         # Store the fields we want to monitor dynamically
         self.extra_fields = extra_fields or []
 
-    def formatMessage(self, record: logging.LogRecord) -> str:
+    def format(self, record: logging.LogRecord) -> str:
         """
         Format the specified record as text and append extra fields.
         """
-        # 1. Format the base message using the parent class logic.
-        # This correctly handles timestamps, log levels, messages, and exceptions.
-        formatted_message = super().formatMessage(record)
+        # Capture the original exception info
+        original_exc_info = record.exc_info
 
-        # 2. Collect extra fields if they exist and have a truthy value.
+        # Temporarily clear the exception info to prevent automatic multi-line traceback printing
+        record.exc_info = None
+        record.exc_text = None
+
+        # Format the base message using standard logic
+        formatted_message = super().format(record)
+
+        # Collect dynamic extra fields
         extra_parts = []
         for field in self.extra_fields:
             if hasattr(record, field):
                 value = getattr(record, field)
-                if (
-                    value is not None and value != ""
-                ):  # Only add if the value is not None/empty
+                if value is not None:  # Only add if the value is not None/empty
                     extra_parts.append(f"[{field}: {value}]")
 
-        # 3. Append the dynamic extra fields to the main formatted message.
+        # If there was an error, append the info in a clean, single-line format
+        if original_exc_info and original_exc_info[0] is not None:
+            exc_type, exc_value, _ = original_exc_info
+            extra_parts.append(f"[Exception: {exc_type.__name__} - {exc_value}]")
+
         if extra_parts:
             formatted_message += " | " + " | ".join(extra_parts)
+
+        # Restore the original exception info to its initial state
+        record.exc_info = original_exc_info
 
         return formatted_message
 
@@ -74,7 +85,7 @@ def setup_logging(config_path: Path = _DEFAULT_LOGGING_CONFIG) -> None:
         if "handlers" in config and "file_handler" in config["handlers"]:
             log_file = _LOGS_DIR / "app.log"
             config["handlers"]["file_handler"]["filename"] = str(log_file)
-            
+
         logging.config.dictConfig(config)
     else:
         raise FileNotFoundError(f"Logging configuration file not found: {config_path}")
