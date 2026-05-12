@@ -8,7 +8,6 @@ A modular, configuration-driven Python data pipeline designed for real-time and 
 
 - **Configuration-Driven:** Add or modify data sources via TOML without touching the code.
 - **Idempotency & Partitioning:** Safely downloads data into Hive-style partitioned directories (e.g., `data/raw/source=gps/date=2026-05-12/`).
-- **Hot-Reloading Daemon:** Runs continuously as a background service, picking up schedule changes on the fly.
 - **Structured Logging:** Custom logging format designed for easy debugging and log parsing.
 
 ## Getting Started (Local Development)
