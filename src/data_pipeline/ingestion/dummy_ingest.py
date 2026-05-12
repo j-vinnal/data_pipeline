@@ -1,26 +1,23 @@
 """Demonstration module for data ingestion and logging.
 
-This module provides functionality to simulate data ingestion and showcases
-various logging levels, including exception handling.
+This module simulates data ingestion for a given source configuration
+and showcases various logging levels, including exception handling.
 """
 
 import logging
 
+from data_pipeline.utils.config_loader import SourceConfig
+
 logger = logging.getLogger(__name__)
 
 
-def ingest() -> None:
-    """Simulate data ingestion and emit log records."""
+def ingest(source: SourceConfig) -> None:
+    """Simulate data ingestion for the given source and emit log records.
 
-    name = "Jüri"
-
-    logger.debug("This is a debug message")
-    logger.debug("name=%s", name)
-    logger.info("This is an info message")
-    logger.info("Data loaded", extra={"file": "data.csv", "rows": 150})
-    logger.warning("This is a warning message")
-    logger.error("This is an error message")
-    logger.critical("This is a critical message")
+    Args:
+        source: The data source configuration to ingest from.
+    """
+    logger.info("Ingesting source | [url: %s] | [format: %s]", source.url, source.format)
 
     donuts = 5
     guests = 0

@@ -1,0 +1,11 @@
+# pipeline.toml
+
+[sources.gps]
+url         = "https://transport.tallinn.ee/readfile.php?name=gps.txt"
+format      = "csv"
+description = "Real-time vehicle positions, updated every 30 seconds"
+
+[sources.gtfs]
+url         = "https://transport.tallinn.ee/data/gtfs.zip"
+format      = "zip"
+description = "GTFS schedule and stop data, updated daily at 04:00"
