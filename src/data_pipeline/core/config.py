@@ -27,6 +27,7 @@ class SourceConfig:
     interval_seconds: int = 0
     window_start: str | None = None
     window_end: str | None = None
+    overwrite_existing: bool = False
 
 
 def load_pipeline_config(

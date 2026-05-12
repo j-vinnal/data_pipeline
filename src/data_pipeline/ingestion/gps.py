@@ -17,13 +17,14 @@ class GPSIngestor(BaseIngestor, source_name="gps"):
         response.raise_for_status()
         return response.content
 
-    def save(self, data: bytes) -> Path:
-        """Save GPS data with a precise timestamp."""
+    def get_target_path(self) -> Path:
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         filename = f"{self.config.name}_{timestamp}.{self.config.format}"
-        file_path = self.get_save_dir() / filename
+        return self.get_save_dir() / filename
 
+    def save(self, data: bytes) -> Path:
+        """Save GPS data with a precise timestamp."""
+        file_path = self.get_target_path()
         with file_path.open("wb") as f:
             f.write(data)
-
         return file_path

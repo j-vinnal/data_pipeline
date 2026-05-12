@@ -60,7 +60,22 @@ class BaseIngestor(ABC):
     def save(self, data: bytes) -> Path:
         pass
 
+    @abstractmethod
+    def get_target_path(self) -> Path:
+        """Determines the target path for the data without saving it yet."""
+        pass
+
     def run(self) -> None:
+        """Orchestrate the ingestion process with idempotency check."""
+        target_path = self.get_target_path()
+
+        if target_path.exists() and not self.config.overwrite_existing:
+            self.logger.info(
+                "Ingestion skipped: File already exists", 
+                extra={"source": self.config.name, "path": str(target_path.relative_to(PROJECT_ROOT))}
+            )
+            return
+
         self.logger.info("Ingestion started", extra={"url": self.config.url})
         try:
             raw_data = self.fetch()

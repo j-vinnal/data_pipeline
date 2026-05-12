@@ -9,7 +9,7 @@ disable_existing_loggers = false
 fmt = "{asctime}.{msecs:03.0f} | {levelname:<8} | {name:<14} | {funcName:<12}:{lineno} | {message:<20}"
 style = "{"
 datefmt = "%Y-%m-%d %H:%M:%S"
-extra_fields = ["file", "rows", "source", "url", "format", "saved_to", "size_mb"]
+extra_fields = ["file", "rows", "source", "url", "format", "saved_to", "size_mb", "path"]
 
 [handlers.console_handler]
 class = "logging.StreamHandler"

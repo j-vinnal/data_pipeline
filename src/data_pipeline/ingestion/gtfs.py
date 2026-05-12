@@ -17,13 +17,14 @@ class GTFSIngestor(BaseIngestor, source_name="gtfs"):
         response.raise_for_status()
         return response.content
 
-    def save(self, data: bytes) -> Path:
-        """Save GTFS data with a daily timestamp."""
+    def get_target_path(self) -> Path:
         timestamp = datetime.now().strftime("%Y%m%d")
         filename = f"{self.config.name}_{timestamp}.{self.config.format}"
-        file_path = self.get_save_dir() / filename
+        return self.get_save_dir() / filename
 
+    def save(self, data: bytes) -> Path:
+        """Save GTFS data with a daily timestamp."""
+        file_path = self.get_target_path()
         with file_path.open("wb") as f:
             f.write(data)
-
         return file_path
