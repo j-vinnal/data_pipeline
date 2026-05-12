@@ -4,9 +4,9 @@ import tomllib
 from pathlib import Path
 from typing import Any, List, Literal, Optional
 
-
-_DEFAULT_LOGGING_CONFIG = Path("config/logging.toml")
-_LOGS_DIR = Path("logs")
+_PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent.parent
+_DEFAULT_LOGGING_CONFIG = _PROJECT_ROOT / "config" / "logging.toml"
+_LOGS_DIR = _PROJECT_ROOT / "logs"
 
 
 class ConditionalFormatter(logging.Formatter):
@@ -14,6 +14,7 @@ class ConditionalFormatter(logging.Formatter):
     Custom formatter that appends dynamically specified extra fields
     to the log message if they are present in the LogRecord.
     """
+
     def __init__(
         self,
         fmt: Optional[str] = None,
@@ -22,7 +23,6 @@ class ConditionalFormatter(logging.Formatter):
         extra_fields: Optional[List[str]] = None,
         **kwargs: Any,
     ) -> None:
-        # Initialize the parent Formatter with standard arguments, including 'style'
         super().__init__(fmt=fmt, datefmt=datefmt, style=style, **kwargs)
         # Store the fields we want to monitor dynamically
         self.extra_fields = extra_fields or []
@@ -40,7 +40,9 @@ class ConditionalFormatter(logging.Formatter):
         for field in self.extra_fields:
             if hasattr(record, field):
                 value = getattr(record, field)
-                if value is not None:  # Only add if the value is not None/empty
+                if (
+                    value is not None and value != ""
+                ):  # Only add if the value is not None/empty
                     extra_parts.append(f"[{field}: {value}]")
 
         # 3. Append the dynamic extra fields to the main formatted message.
@@ -67,8 +69,12 @@ def setup_logging(config_path: Path = _DEFAULT_LOGGING_CONFIG) -> None:
     if config_path.exists():
         with config_path.open("rb") as f:
             config = tomllib.load(f)
+
+        # Dynamically overwrite the file handler path with an absolute path
+        if "handlers" in config and "file_handler" in config["handlers"]:
+            log_file = _LOGS_DIR / "app.log"
+            config["handlers"]["file_handler"]["filename"] = str(log_file)
+            
         logging.config.dictConfig(config)
     else:
-        raise FileNotFoundError(
-            f"Logging configuration file not found: {config_path}"
-        )
+        raise FileNotFoundError(f"Logging configuration file not found: {config_path}")

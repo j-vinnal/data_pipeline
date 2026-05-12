@@ -1,5 +1,5 @@
 """
-main.py
+__main__.py
 
 Entry point for the application.
 Responsibilities:
@@ -10,10 +10,9 @@ Responsibilities:
 """
 
 import logging
-from pathlib import Path
 
-from src.data_pipeline.utils.logging_setup import setup_logging
-from src.data_pipeline.ingestion.dummy_ingest import ingest
+from data_pipeline.utils.logging_setup import setup_logging
+from data_pipeline.ingestion.dummy_ingest import ingest
 
 logger = logging.getLogger(__name__)
 

@@ -1,30 +1,30 @@
-2026-05-12 10:43:01.315 | INFO     | __main__              | main:29 | Logging demo started
-2026-05-12 10:43:01.316 | DEBUG    | src.data_pipeline.ingestion.dummy_ingest | ingest:18 | This is a debug message
-2026-05-12 10:43:01.317 | DEBUG    | src.data_pipeline.ingestion.dummy_ingest | ingest:19 | name=Jüri
-2026-05-12 10:43:01.317 | INFO     | src.data_pipeline.ingestion.dummy_ingest | ingest:20 | This is an info message
-2026-05-12 10:43:01.318 | INFO     | src.data_pipeline.ingestion.dummy_ingest | ingest:21 | Data loaded | [file: data.csv] | [rows: 150]
-2026-05-12 10:43:01.318 | WARNING  | src.data_pipeline.ingestion.dummy_ingest | ingest:22 | This is a warning message
-2026-05-12 10:43:01.319 | ERROR    | src.data_pipeline.ingestion.dummy_ingest | ingest:23 | This is an error message
-2026-05-12 10:43:01.329 | CRITICAL | src.data_pipeline.ingestion.dummy_ingest | ingest:24 | This is a critical message
-2026-05-12 10:43:01.330 | ERROR    | src.data_pipeline.ingestion.dummy_ingest | ingest:32 | An exception occurred while trying to divide by zero.
+2026-05-12 11:38:18.671 | INFO     | __main__              | main:28 | Logging demo started
+2026-05-12 11:38:18.671 | DEBUG    | data_pipeline.ingestion.dummy_ingest | ingest:18 | This is a debug message
+2026-05-12 11:38:18.672 | DEBUG    | data_pipeline.ingestion.dummy_ingest | ingest:19 | name=Jüri
+2026-05-12 11:38:18.672 | INFO     | data_pipeline.ingestion.dummy_ingest | ingest:20 | This is an info message
+2026-05-12 11:38:18.672 | INFO     | data_pipeline.ingestion.dummy_ingest | ingest:21 | Data loaded | [file: data.csv] | [rows: 150]
+2026-05-12 11:38:18.673 | WARNING  | data_pipeline.ingestion.dummy_ingest | ingest:22 | This is a warning message
+2026-05-12 11:38:18.673 | ERROR    | data_pipeline.ingestion.dummy_ingest | ingest:23 | This is an error message
+2026-05-12 11:38:18.676 | CRITICAL | data_pipeline.ingestion.dummy_ingest | ingest:24 | This is a critical message
+2026-05-12 11:38:18.676 | ERROR    | data_pipeline.ingestion.dummy_ingest | ingest:32 | An exception occurred while trying to divide by zero.
 Traceback (most recent call last):
   File "C:\Projects\stuff_25\learn\python\data_pipeline\src\data_pipeline\ingestion\dummy_ingest.py", line 29, in ingest
     donuts_per_guest = donuts / guests
                        ~~~~~~~^~~~~~~~
 ZeroDivisionError: division by zero
-2026-05-12 10:43:01.332 | INFO     | __main__              | main:34 | Logging demo finished
-2026-05-12 10:57:50.993 | INFO     | __main__              | main:29 | Logging demo started
-2026-05-12 10:57:50.993 | DEBUG    | src.data_pipeline.ingestion.dummy_ingest | ingest:18 | This is a debug message
-2026-05-12 10:57:50.994 | DEBUG    | src.data_pipeline.ingestion.dummy_ingest | ingest:19 | name=Jüri
-2026-05-12 10:57:50.994 | INFO     | src.data_pipeline.ingestion.dummy_ingest | ingest:20 | This is an info message
-2026-05-12 10:57:50.995 | INFO     | src.data_pipeline.ingestion.dummy_ingest | ingest:21 | Data loaded | [file: data.csv] | [rows: 150]
-2026-05-12 10:57:50.995 | WARNING  | src.data_pipeline.ingestion.dummy_ingest | ingest:22 | This is a warning message
-2026-05-12 10:57:50.995 | ERROR    | src.data_pipeline.ingestion.dummy_ingest | ingest:23 | This is an error message
-2026-05-12 10:57:50.996 | CRITICAL | src.data_pipeline.ingestion.dummy_ingest | ingest:24 | This is a critical message
-2026-05-12 10:57:50.996 | ERROR    | src.data_pipeline.ingestion.dummy_ingest | ingest:32 | An exception occurred while trying to divide by zero.
+2026-05-12 11:38:18.678 | INFO     | __main__              | main:33 | Logging demo finished
+2026-05-12 11:38:23.858 | INFO     | __main__              | main:28 | Logging demo started
+2026-05-12 11:38:23.859 | DEBUG    | data_pipeline.ingestion.dummy_ingest | ingest:18 | This is a debug message
+2026-05-12 11:38:23.859 | DEBUG    | data_pipeline.ingestion.dummy_ingest | ingest:19 | name=Jüri
+2026-05-12 11:38:23.859 | INFO     | data_pipeline.ingestion.dummy_ingest | ingest:20 | This is an info message
+2026-05-12 11:38:23.860 | INFO     | data_pipeline.ingestion.dummy_ingest | ingest:21 | Data loaded | [file: data.csv] | [rows: 150]
+2026-05-12 11:38:23.860 | WARNING  | data_pipeline.ingestion.dummy_ingest | ingest:22 | This is a warning message
+2026-05-12 11:38:23.860 | ERROR    | data_pipeline.ingestion.dummy_ingest | ingest:23 | This is an error message
+2026-05-12 11:38:23.860 | CRITICAL | data_pipeline.ingestion.dummy_ingest | ingest:24 | This is a critical message
+2026-05-12 11:38:23.861 | ERROR    | data_pipeline.ingestion.dummy_ingest | ingest:32 | An exception occurred while trying to divide by zero.
 Traceback (most recent call last):
   File "C:\Projects\stuff_25\learn\python\data_pipeline\src\data_pipeline\ingestion\dummy_ingest.py", line 29, in ingest
     donuts_per_guest = donuts / guests
                        ~~~~~~~^~~~~~~~
 ZeroDivisionError: division by zero
-2026-05-12 10:57:50.998 | INFO     | __main__              | main:34 | Logging demo finished
+2026-05-12 11:38:23.862 | INFO     | __main__              | main:33 | Logging demo finished
