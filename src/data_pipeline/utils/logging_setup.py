@@ -1,11 +1,7 @@
-"""Load logging configuration from a TOML file and apply it.
+"""Configuration module for application logging setup.
 
-Args:
-    config_path (Path): The path to the TOML configuration file. Defaults
-        to the project's config/logging.toml.
-
-Raises:
-    FileNotFoundError: If the configuration file does not exist.
+This module provides a custom log formatter and a setup function to initialize
+logging from a TOML configuration file.
 """
 
 import logging
