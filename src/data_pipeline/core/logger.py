@@ -1,9 +1,4 @@
-"""
-Configuration module for application logging setup.
-
-This module provides a custom log formatter and a setup function to initialize
-logging from a TOML configuration file.
-"""
+"""Logging configuration and setup."""
 
 import logging
 import logging.config
@@ -11,9 +6,10 @@ import tomllib
 from pathlib import Path
 from typing import Any, Literal
 
-_PROJECT_ROOT = Path(__file__).resolve().parents[3]
-_DEFAULT_LOGGING_CONFIG = _PROJECT_ROOT / "config" / "logging.toml"
-_LOGS_DIR = _PROJECT_ROOT / "logs"
+from data_pipeline import PROJECT_ROOT
+
+_DEFAULT_LOG_CONFIG = PROJECT_ROOT / "config" / "logging.toml"
+_LOGS_DIR = PROJECT_ROOT / "logs"
 
 
 class ConditionalFormatter(logging.Formatter):
@@ -75,7 +71,7 @@ class ConditionalFormatter(logging.Formatter):
                 if value is not None:  # Only add if the value is not None/empty
                     extra_parts.append(f"[{field}: {value}]")
 
-        # If there was an error, append the info in a clean, single-line format
+        # Append error info in a single-line format
         if original_exc_info and original_exc_info[0] is not None:
             exc_type, exc_value, _ = original_exc_info
             extra_parts.append(f"[Exception: {exc_type.__name__} - {exc_value}]")
@@ -104,7 +100,7 @@ def _resolve_log_file_paths(config: dict[str, Any], base_dir: Path) -> None:
                 handler_cfg["filename"] = str(base_dir / filename)
 
 
-def setup_logging(config_path: Path = _DEFAULT_LOGGING_CONFIG) -> None:
+def setup_logging(config_path: Path = _DEFAULT_LOG_CONFIG) -> None:
     """Load logging configuration from a TOML file and apply it.
 
     Args:
@@ -122,5 +118,5 @@ def setup_logging(config_path: Path = _DEFAULT_LOGGING_CONFIG) -> None:
     with config_path.open("rb") as f:
         config = tomllib.load(f)
 
-    _resolve_log_file_paths(config, _PROJECT_ROOT)
+    _resolve_log_file_paths(config, PROJECT_ROOT)
     logging.config.dictConfig(config)

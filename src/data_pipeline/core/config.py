@@ -1,16 +1,12 @@
-"""Pipeline configuration loader.
-
-This module loads and validates the pipeline configuration from a TOML file
-and exposes it as typed dataclasses.
-"""
+"""Pipeline configuration loader."""
 
 import tomllib
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
+from data_pipeline import PROJECT_ROOT
 
-_PROJECT_ROOT = Path(__file__).resolve().parents[3]
-_DEFAULT_PIPELINE_CONFIG = _PROJECT_ROOT / "config" / "pipeline.toml"
+_DEFAULT_PIPELINE_CONFIG = PROJECT_ROOT / "config" / "pipeline.toml"
 
 
 @dataclass(frozen=True)
@@ -37,10 +33,8 @@ def load_pipeline_config(
 
     Args:
         config_path (Path): Path to the pipeline TOML configuration file.
-
     Returns:
         dict[str, SourceConfig]: A dictionary mapping source names to their configurations.
-
     Raises:
         FileNotFoundError: If the configuration file does not exist.
     """

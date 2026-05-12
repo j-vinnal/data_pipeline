@@ -2,7 +2,7 @@
 
 import logging
 
-from data_pipeline.utils.config_loader import SourceConfig
+from data_pipeline.core.config import SourceConfig
 
 logger = logging.getLogger(__name__)
 

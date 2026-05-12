@@ -4,8 +4,8 @@ import sys
 import logging
 import tomllib
 
-from data_pipeline.utils.logging_setup import setup_logging
-from data_pipeline.utils.config_loader import load_pipeline_config, SourceConfig
+from data_pipeline.core.logger import setup_logging
+from data_pipeline.core.config import load_pipeline_config, SourceConfig
 from data_pipeline.ingestion.dummy_ingest import ingest
 from data_pipeline.cli import parse_args
 
@@ -13,10 +13,10 @@ logger = logging.getLogger(__name__)
 
 
 def run_pipeline(
-    sources_dict: dict[str, SourceConfig], source_name: str | None
+        sources_dict: dict[str, SourceConfig], source_name: str | None
 ) -> bool:
     """Executes the ingestion process for specified sources.
-
+    
     Args:
         sources_dict (dict[str, SourceConfig]): The loaded pipeline sources configuration.
         source_name (str | None): The specific source to run, or None to run all.
@@ -38,7 +38,7 @@ def run_pipeline(
     for source in sources_to_run:
         try:
             ingest(source)
-        except Exception:
+        except (OSError, RuntimeError, ValueError):
             logger.exception("Ingestion failed", extra={"source": source.name})
             overall_success = False
 
@@ -58,11 +58,8 @@ def main() -> int:
 
     try:
         sources_config = load_pipeline_config()
-    except FileNotFoundError:
-        logger.critical("Pipeline config missing")
-        return 1
-    except tomllib.TOMLDecodeError:
-        logger.critical("Pipeline config is invalid TOML")
+    except (FileNotFoundError, tomllib.TOMLDecodeError):
+        logger.critical("Pipeline config error")
         return 1
 
     valid_sources = list(sources_config.keys())
