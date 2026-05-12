@@ -1,14 +1,18 @@
-"""Configuration module for application logging setup.
+"""Load logging configuration from a TOML file and apply it.
 
-This module provides a custom formatter and a setup function to initialize
-logging from a TOML configuration file.
+Args:
+    config_path (Path): The path to the TOML configuration file. Defaults
+        to the project's config/logging.toml.
+
+Raises:
+    FileNotFoundError: If the configuration file does not exist.
 """
 
 import logging
 import logging.config
 import tomllib
 from pathlib import Path
-from typing import Any, Literal, Optional, List
+from typing import Any, Literal
 
 _PROJECT_ROOT = Path(__file__).resolve().parents[3]
 _DEFAULT_LOGGING_CONFIG = _PROJECT_ROOT / "config" / "logging.toml"
@@ -27,19 +31,19 @@ class ConditionalFormatter(logging.Formatter):
 
     def __init__(
         self,
-        fmt: Optional[str] = None,
-        datefmt: Optional[str] = None,
+        fmt: str | None = None,
+        datefmt: str | None = None,
         style: Literal["%", "{", "$"] = "%",
-        extra_fields: Optional[List[str]] = None,
+        extra_fields: list[str] | None = None,
         **kwargs: Any,
     ) -> None:
         """Initialize the ConditionalFormatter.
 
         Args:
-            fmt (Optional[str]): The format string for the log message.
-            datefmt (Optional[str]): The format string for the date/time.
+            fmt (str | None): The format string for the log message.
+            datefmt (str | None): The format string for the date/time.
             style (Literal["%", "{", "$"]): The formatting style. Defaults to "%".
-            extra_fields (Optional[List[str]]): A list of extra field names to append.
+            extra_fields (list[str] | None): A list of extra field names to append.
             **kwargs (Any): Additional keyword arguments passed to the base Formatter.
         """
         super().__init__(fmt=fmt, datefmt=datefmt, style=style, **kwargs)
@@ -88,11 +92,12 @@ class ConditionalFormatter(logging.Formatter):
 
         return formatted_message
 
-def _resolve_log_file_paths(config: dict, base_dir: Path) -> None:
+
+def _resolve_log_file_paths(config: dict[str, Any], base_dir: Path) -> None:
     """Make all relative filename paths in logging handlers absolute.
 
     Args:
-        config (dict): The parsed logging configuration dictionary.
+        config (dict[str, Any]): The parsed logging configuration dictionary.
         base_dir (Path): The base directory to resolve relative paths against.
     """
     for handler_cfg in config.get("handlers", {}).values():
