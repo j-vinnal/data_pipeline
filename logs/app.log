@@ -1,10 +1,10 @@
-2026-05-12 11:57:49.819 | INFO     | __main__              | main:28 | Logging demo started
-2026-05-12 11:57:49.820 | DEBUG    | data_pipeline.ingestion.dummy_ingest | ingest:18 | This is a debug message
-2026-05-12 11:57:49.820 | DEBUG    | data_pipeline.ingestion.dummy_ingest | ingest:19 | name=Jüri
-2026-05-12 11:57:49.820 | INFO     | data_pipeline.ingestion.dummy_ingest | ingest:20 | This is an info message
-2026-05-12 11:57:49.821 | INFO     | data_pipeline.ingestion.dummy_ingest | ingest:21 | Data loaded | [file: data.csv] | [rows: 150]
-2026-05-12 11:57:49.821 | WARNING  | data_pipeline.ingestion.dummy_ingest | ingest:22 | This is a warning message
-2026-05-12 11:57:49.821 | ERROR    | data_pipeline.ingestion.dummy_ingest | ingest:23 | This is an error message
-2026-05-12 11:57:49.822 | CRITICAL | data_pipeline.ingestion.dummy_ingest | ingest:24 | This is a critical message
-2026-05-12 11:57:49.822 | ERROR    | data_pipeline.ingestion.dummy_ingest | ingest:32 | An exception occurred while trying to divide by zero. | [Exception: ZeroDivisionError - division by zero]
-2026-05-12 11:57:49.822 | INFO     | __main__              | main:33 | Logging demo finished
+2026-05-12 12:42:58.220 | INFO     | __main__              | main:22 | Logging demo started
+2026-05-12 12:42:58.221 | DEBUG    | data_pipeline.ingestion.dummy_ingest | ingest:17 | This is a debug message
+2026-05-12 12:42:58.221 | DEBUG    | data_pipeline.ingestion.dummy_ingest | ingest:18 | name=Jüri
+2026-05-12 12:42:58.222 | INFO     | data_pipeline.ingestion.dummy_ingest | ingest:19 | This is an info message
+2026-05-12 12:42:58.222 | INFO     | data_pipeline.ingestion.dummy_ingest | ingest:20 | Data loaded | [file: data.csv] | [rows: 150]
+2026-05-12 12:42:58.222 | WARNING  | data_pipeline.ingestion.dummy_ingest | ingest:21 | This is a warning message
+2026-05-12 12:42:58.222 | ERROR    | data_pipeline.ingestion.dummy_ingest | ingest:22 | This is an error message
+2026-05-12 12:42:58.223 | CRITICAL | data_pipeline.ingestion.dummy_ingest | ingest:23 | This is a critical message
+2026-05-12 12:42:58.223 | ERROR    | data_pipeline.ingestion.dummy_ingest | ingest:30 | An exception occurred while trying to divide by zero. | [Exception: ZeroDivisionError - division by zero]
+2026-05-12 12:42:58.224 | INFO     | __main__              | main:24 | Logging demo finished

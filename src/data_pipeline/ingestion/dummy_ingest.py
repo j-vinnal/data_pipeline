@@ -1,8 +1,7 @@
-"""
-dummy_ingest.py
------
-Logging demonstration module.
+"""Demonstration module for data ingestion and logging.
 
+This module provides functionality to simulate data ingestion and showcases
+various logging levels, including exception handling.
 """
 
 import logging
@@ -11,12 +10,12 @@ logger = logging.getLogger(__name__)
 
 
 def ingest() -> None:
-    """Emit one log record at every standard level, then trigger an exception."""
+    """Simulate data ingestion and emit log records."""
 
     name = "Jüri"
 
     logger.debug("This is a debug message")
-    logger.debug("name=%s", name)          # use % interpolation, not f-strings
+    logger.debug("name=%s", name)
     logger.info("This is an info message")
     logger.info("Data loaded", extra={"file": "data.csv", "rows": 150})
     logger.warning("This is a warning message")
@@ -26,7 +25,6 @@ def ingest() -> None:
     donuts = 5
     guests = 0
     try:
-        donuts_per_guest = donuts / guests
+        _ = donuts / guests
     except ZeroDivisionError:
-        # logger.exception logs at ERROR level and appends the full traceback
         logger.exception("An exception occurred while trying to divide by zero.")

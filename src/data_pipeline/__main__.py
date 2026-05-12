@@ -1,12 +1,7 @@
-"""
-__main__.py
+"""Entry point for the data pipeline application.
 
-Entry point for the application.
-Responsibilities:
-1. Define custom formatters.
-2. Initialize the logging configuration from a TOML file.
-3. Ensure the log directory exists.
-4. Run the application logic.
+This module initializes the core configuration, sets up the logging
+environment, and triggers the main ingestion pipeline.
 """
 
 import logging
@@ -18,18 +13,14 @@ logger = logging.getLogger(__name__)
 
 
 def main() -> None:
+    """Execute the main application flow.
+
+    This function initializes logging and runs the data ingestion process.
     """
-    Main execution function of the script.
-    """
-    # 1. Initialize logging before any other operations
     setup_logging()
 
-    # 2. Start the demo
     logger.info("Logging demo started")
-
     ingest()
-
-    # 3. Finish the demo
     logger.info("Logging demo finished")
 
 
