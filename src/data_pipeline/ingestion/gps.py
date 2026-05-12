@@ -5,7 +5,7 @@ from pathlib import Path
 
 import requests
 
-from data_pipeline.ingestion.base import BaseIngestor, RAW_DATA_DIR
+from data_pipeline.ingestion.base import BaseIngestor
 
 
 class GPSIngestor(BaseIngestor, source_name="gps"):
@@ -21,7 +21,7 @@ class GPSIngestor(BaseIngestor, source_name="gps"):
         """Save GPS data with a precise timestamp."""
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         filename = f"{self.config.name}_{timestamp}.{self.config.format}"
-        file_path = RAW_DATA_DIR / filename
+        file_path = self.get_save_dir() / filename
 
         with file_path.open("wb") as f:
             f.write(data)

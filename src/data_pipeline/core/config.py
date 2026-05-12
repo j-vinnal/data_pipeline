@@ -24,6 +24,9 @@ class SourceConfig:
     url: str
     format: str
     description: str
+    interval_seconds: int = 0
+    window_start: str | None = None
+    window_end: str | None = None
 
 
 def load_pipeline_config(

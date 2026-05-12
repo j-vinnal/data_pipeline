@@ -32,4 +32,15 @@ def parse_args(valid_sources: list[str]) -> argparse.Namespace:
         help="Specific source to run. If omitted, runs all sources.",
     )
 
+    daemon_parser = subparsers.add_parser(
+        "daemon", help="Run data ingestion continuously on a schedule"
+    )
+    daemon_parser.add_argument(
+        "--source",
+        type=str,
+        default=None,
+        choices=valid_sources,
+        help="Specific source to schedule. If omitted, schedules all sources.",
+    )
+
     return parser.parse_args()
