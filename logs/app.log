@@ -1,32 +1,12 @@
-2026-05-12 12:42:58.220 | INFO     | __main__              | main:22 | Logging demo started
-2026-05-12 12:42:58.221 | DEBUG    | data_pipeline.ingestion.dummy_ingest | ingest:17 | This is a debug message
-2026-05-12 12:42:58.221 | DEBUG    | data_pipeline.ingestion.dummy_ingest | ingest:18 | name=Jüri
-2026-05-12 12:42:58.222 | INFO     | data_pipeline.ingestion.dummy_ingest | ingest:19 | This is an info message
-2026-05-12 12:42:58.222 | INFO     | data_pipeline.ingestion.dummy_ingest | ingest:20 | Data loaded | [file: data.csv] | [rows: 150]
-2026-05-12 12:42:58.222 | WARNING  | data_pipeline.ingestion.dummy_ingest | ingest:21 | This is a warning message
-2026-05-12 12:42:58.222 | ERROR    | data_pipeline.ingestion.dummy_ingest | ingest:22 | This is an error message
-2026-05-12 12:42:58.223 | CRITICAL | data_pipeline.ingestion.dummy_ingest | ingest:23 | This is a critical message
-2026-05-12 12:42:58.223 | ERROR    | data_pipeline.ingestion.dummy_ingest | ingest:30 | An exception occurred while trying to divide by zero. | [Exception: ZeroDivisionError - division by zero]
-2026-05-12 12:42:58.224 | INFO     | __main__              | main:24 | Logging demo finished
-2026-05-12 13:07:45.848 | INFO     | __main__              | main:22 | Logging demo started
-2026-05-12 13:07:45.849 | DEBUG    | data_pipeline.ingestion.dummy_ingest | ingest:17 | This is a debug message
-2026-05-12 13:07:45.849 | DEBUG    | data_pipeline.ingestion.dummy_ingest | ingest:18 | name=Jüri
-2026-05-12 13:07:45.850 | INFO     | data_pipeline.ingestion.dummy_ingest | ingest:19 | This is an info message
-2026-05-12 13:07:45.850 | INFO     | data_pipeline.ingestion.dummy_ingest | ingest:20 | Data loaded | [file: data.csv] | [rows: 150]
-2026-05-12 13:07:45.851 | WARNING  | data_pipeline.ingestion.dummy_ingest | ingest:21 | This is a warning message
-2026-05-12 13:07:45.851 | ERROR    | data_pipeline.ingestion.dummy_ingest | ingest:22 | This is an error message
-2026-05-12 13:07:45.851 | CRITICAL | data_pipeline.ingestion.dummy_ingest | ingest:23 | This is a critical message
-2026-05-12 13:07:45.852 | ERROR    | data_pipeline.ingestion.dummy_ingest | ingest:30 | An exception occurred while trying to divide by zero. | [Exception: ZeroDivisionError - division by zero]
-2026-05-12 13:07:45.852 | INFO     | __main__              | main:24 | Logging demo finished
-2026-05-12 13:29:56.287 | INFO     | __main__              | main:44 | Pipeline started | [source: gps]
-2026-05-12 13:29:56.288 | INFO     | data_pipeline.ingestion.dummy_ingest | ingest:20 | Ingesting source | [url: https://transport.tallinn.ee/readfile.php?name=gps.txt] | [format: csv]
-2026-05-12 13:29:56.289 | ERROR    | data_pipeline.ingestion.dummy_ingest | ingest:27 | An exception occurred while trying to divide by zero. | [Exception: ZeroDivisionError - division by zero]
-2026-05-12 13:29:56.289 | INFO     | __main__              | main:46 | Pipeline finished | [source: gps]
-2026-05-12 13:30:37.643 | INFO     | __main__              | main:44 | Pipeline started | [source: gtfs]
-2026-05-12 13:30:37.643 | INFO     | data_pipeline.ingestion.dummy_ingest | ingest:20 | Ingesting source | [url: https://transport.tallinn.ee/data/gtfs.zip] | [format: zip]
-2026-05-12 13:30:37.644 | ERROR    | data_pipeline.ingestion.dummy_ingest | ingest:27 | An exception occurred while trying to divide by zero. | [Exception: ZeroDivisionError - division by zero]
-2026-05-12 13:30:37.644 | INFO     | __main__              | main:46 | Pipeline finished | [source: gtfs]
-2026-05-12 13:35:38.212 | INFO     | __main__              | main:46 | Pipeline started | [source: gtfs]
-2026-05-12 13:35:38.213 | INFO     | data_pipeline.ingestion.dummy_ingest | ingest:20 | Ingesting source | [url: https://transport.tallinn.ee/data/gtfs.zip] | [format: zip]
-2026-05-12 13:35:38.214 | ERROR    | data_pipeline.ingestion.dummy_ingest | ingest:27 | An exception occurred while trying to divide by zero. | [Exception: ZeroDivisionError - division by zero]
-2026-05-12 13:35:38.216 | INFO     | __main__              | main:48 | Pipeline finished | [source: gtfs]
+2026-05-12 16:17:08.967 | INFO     | __main__                             | main  :46 | Pipeline started | [source: gtfs]
+2026-05-12 16:17:08.968 | INFO     | data_pipeline.ingestion.dummy_ingest | ingest:19 | Ingesting source | [format: zip] | [url: https://transport.tallinn.ee/data/gtfs.zip]
+2026-05-12 16:17:08.968 | ERROR    | data_pipeline.ingestion.dummy_ingest | ingest:26 | An exception occurred while trying to divide by zero. | [Exception: ZeroDivisionError - division by zero]
+2026-05-12 16:17:08.969 | INFO     | __main__                             | main  :58 | Pipeline finished | [source: gtfs]
+2026-05-12 16:17:38.443 | INFO     | __main__                             | main  :46 | Pipeline started | [source: gps]
+2026-05-12 16:17:38.443 | INFO     | data_pipeline.ingestion.dummy_ingest | ingest:19 | Ingesting source | [format: csv] | [url: https://transport.tallinn.ee/readfile.php?name=gps.txt]
+2026-05-12 16:17:38.444 | ERROR    | data_pipeline.ingestion.dummy_ingest | ingest:26 | An exception occurred while trying to divide by zero. | [Exception: ZeroDivisionError - division by zero]
+2026-05-12 16:17:38.444 | INFO     | __main__                             | main  :58 | Pipeline finished | [source: gps]
+2026-05-12 16:17:38.444 | INFO     | __main__                             | main  :46 | Pipeline started | [source: gtfs]
+2026-05-12 16:17:38.445 | INFO     | data_pipeline.ingestion.dummy_ingest | ingest:19 | Ingesting source | [format: zip] | [url: https://transport.tallinn.ee/data/gtfs.zip]
+2026-05-12 16:17:38.445 | ERROR    | data_pipeline.ingestion.dummy_ingest | ingest:26 | An exception occurred while trying to divide by zero. | [Exception: ZeroDivisionError - division by zero]
+2026-05-12 16:17:38.445 | INFO     | __main__                             | main  :58 | Pipeline finished | [source: gtfs]

@@ -1,0 +1,507 @@
+=== PROJECT STRUCTURE ===
+data_pipeline/
+    context_uus.txt
+    LICENSE
+    pyproject.toml
+    README.md
+    config/
+        logging.toml
+        pipeline.toml
+    data/
+        clean/
+        curated/
+        raw/
+    logs/
+        app.log
+    src/
+        data_pipeline/
+            cli.py
+            __init__.py
+            __main__.py
+            analysis/
+            ingestion/
+                dummy_ingest.py
+                __init__.py
+            transform/
+            utils/
+                config_loader.py
+                logging_setup.py
+                __init__.py
+
+=== FILE CONTENTS ===
+
+--- context_uus.txt ---
+
+
+--- LICENSE ---
+MIT License
+
+Copyright (c) 2026 Jüri Vinnal
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+--- pyproject.toml ---
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "data-pipeline"
+version = "0.1.0"
+description = "A modular data pipeline framework."
+readme = "README.md"
+license = {text = "MIT"}
+requires-python = ">=3.11"
+dependencies = []
+
+[project.scripts]
+data-pipeline = "data_pipeline.__main__:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+--- README.md ---
+# data-pipeline
+
+## Description
+
+## Getting Started
+
+```bash
+python -m venv .venv
+.venv\Scripts\activate      # Windows
+source .venv/bin/activate   # Mac/Linux
+pip install -e .
+python -m data_pipeline
+```
+
+```bash
+python -m data_pipeline --source gps
+python -m data_pipeline --source gtfs
+python -m data_pipeline --source unknown  # → selge viga: "Unknown source 'unknown'. Available: gps, gtfs"
+```
+
+--- config\logging.toml ---
+# logging.toml
+
+version = 1
+disable_existing_loggers = false
+
+[formatters.conditional_formatter]
+# The "()" key tells dictConfig to instantiate a custom class.
+"()" = "data_pipeline.utils.logging_setup.ConditionalFormatter"
+fmt = "{asctime}.{msecs:03.0f} | {levelname:<8} | {name:<21} | {funcName}:{lineno} | {message}"
+style = "{"
+datefmt = "%Y-%m-%d %H:%M:%S"
+extra_fields = ["file", "rows", "source"]
+
+[handlers.console_handler]
+class = "logging.StreamHandler"
+level = "DEBUG"
+formatter = "conditional_formatter"
+stream = "ext://sys.stdout"
+
+[handlers.file_handler]
+class = "logging.FileHandler"
+level = "DEBUG"
+formatter = "conditional_formatter"
+filename = "logs/app.log"
+mode = "a"
+encoding = "utf-8"
+
+[root]
+level = "DEBUG"
+handlers = ["console_handler", "file_handler"]
+
+--- config\pipeline.toml ---
+# pipeline.toml
+
+[sources.gps]
+url         = "https://transport.tallinn.ee/readfile.php?name=gps.txt"
+format      = "csv"
+description = "Real-time vehicle positions, updated every 30 seconds"
+
+[sources.gtfs]
+url         = "https://transport.tallinn.ee/data/gtfs.zip"
+format      = "zip"
+description = "GTFS schedule and stop data, updated daily at 04:00"
+
+--- logs\app.log ---
+
+
+--- src\data_pipeline\cli.py ---
+"""Command-line interface for the data pipeline."""
+
+import argparse
+
+
+def parse_args(valid_sources: list[str]) -> argparse.Namespace:
+    """Parse command-line arguments with subparsers.
+
+    Args:
+        valid_sources: List of source names from configuration for validation.
+
+    Returns:
+        Parsed arguments namespace.
+    """
+    parser = argparse.ArgumentParser(
+        prog="data-pipeline",
+        description="Modular data pipeline framework.",
+    )
+
+    subparsers = parser.add_subparsers(
+        title="commands",
+        dest="command",
+        required=True,
+    )
+
+    run_parser = subparsers.add_parser("run", help="Run data ingestion")
+    run_parser.add_argument(
+        "--source",
+        type=str,
+        default=None,
+        choices=valid_sources,
+        help="Specific source to run. If omitted, runs all sources.",
+    )
+
+    return parser.parse_args()
+
+--- src\data_pipeline\__init__.py ---
+
+
+--- src\data_pipeline\__main__.py ---
+"""Main entry point for the data pipeline application."""
+
+import sys
+import logging
+import tomllib
+
+from data_pipeline.utils.logging_setup import setup_logging
+
+from data_pipeline.utils.config_loader import load_pipeline_config
+from data_pipeline.ingestion.dummy_ingest import ingest
+from data_pipeline.cli import parse_args
+
+logger = logging.getLogger(__name__)
+
+
+def main() -> int:
+    """Executes the main application flow.
+
+    Returns:
+        int: 0 for successful execution, non-zero exit code for failure.
+    """
+    setup_logging()
+
+    try:
+        config = load_pipeline_config()
+    except FileNotFoundError:
+        logger.critical("Pipeline config missing")
+        return 1
+    except tomllib.TOMLDecodeError:
+        logger.critical("Pipeline config is invalid TOML")
+        return 1
+
+    valid_sources = list(config.sources.keys())
+    args = parse_args(valid_sources=valid_sources)
+
+    if args.command == "run":
+        sources_to_run = (
+            [config.sources[args.source]]
+            if args.source
+            else list(config.sources.values())
+        )
+
+        overall_success = True
+
+        for source in sources_to_run:
+            logger.info("Pipeline started", extra={"source": source.name})
+            try:
+                ingest(source)
+            except Exception as e:
+                logger.error(
+                    "Ingestion failed: %s",
+                    e,
+                    extra={"source": source.name},
+                    exc_info=True,
+                )
+                overall_success = False
+            finally:
+                logger.info("Pipeline finished", extra={"source": source.name})
+
+        # Return non-zero exit code if any source failed
+        return 0 if overall_success else 1
+
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())
+
+--- src\data_pipeline\ingestion\dummy_ingest.py ---
+"""Simulates data ingestion for a given source configuration."""
+
+import logging
+
+from data_pipeline.utils.config_loader import SourceConfig
+
+logger = logging.getLogger(__name__)
+
+
+def ingest(source: SourceConfig) -> None:
+    """Simulates downloading and processing data from a given source.
+    
+    Args:
+        source (SourceConfig): The configuration object for the target data source.
+        
+    Raises:
+        ZeroDivisionError: Raised artificially to simulate an ingestion failure.
+    """
+    logger.info("Ingesting source", extra={"url": source.url, "format": source.format})
+
+    donuts = 5
+    guests = 0
+    try:
+        _ = donuts / guests
+    except ZeroDivisionError:
+        logger.exception("An exception occurred while trying to divide by zero.")
+
+--- src\data_pipeline\ingestion\__init__.py ---
+
+
+--- src\data_pipeline\utils\config_loader.py ---
+"""
+Pipeline configuration loader.
+
+This module loads and validates the pipeline configuration from a TOML file
+and exposes it as typed dataclasses.
+"""
+
+import tomllib
+from dataclasses import dataclass
+from pathlib import Path
+from typing import Any
+
+_PROJECT_ROOT = Path(__file__).resolve().parents[3]
+_DEFAULT_PIPELINE_CONFIG = _PROJECT_ROOT / "config" / "pipeline.toml"
+
+
+@dataclass(frozen=True)
+class SourceConfig:
+    """Configuration for a single data source.
+
+    Attributes:
+        name: The source identifier key (e.g. 'gps', 'gtfs').
+        url: The URL to fetch data from.
+        format: The file format of the source data (e.g. 'csv', 'zip').
+        description: Human-readable description of the source.
+    """
+
+    name: str
+    url: str
+    format: str
+    description: str
+
+
+@dataclass(frozen=True)
+class PipelineConfig:
+    """Top-level pipeline configuration.
+
+    Attributes:
+        sources: A mapping of source name to its configuration.
+    """
+
+    sources: dict[str, SourceConfig]
+
+    def get_source(self, name: str) -> SourceConfig:
+        """Retrieve a source configuration by name.
+
+        Args:
+            name: The source identifier (e.g. 'gps', 'gtfs').
+
+        Returns:
+            The matching SourceConfig.
+    
+        Raises:
+            ValueError: If the source name is not found in the configuration.
+        """
+        if name not in self.sources:
+            available = ", ".join(self.sources)
+            raise ValueError(f"Unknown source '{name}'. Available: {available}")
+        return self.sources[name]
+
+
+def load_pipeline_config(
+    config_path: Path = _DEFAULT_PIPELINE_CONFIG,
+) -> PipelineConfig:
+    """Load and parse the pipeline configuration from a TOML file.
+
+    Args:
+        config_path: Path to the pipeline TOML configuration file.
+
+    Returns:
+        A populated PipelineConfig instance.
+
+    Raises:
+        FileNotFoundError: If the configuration file does not exist.
+    """
+    if not config_path.exists():
+        raise FileNotFoundError(f"Pipeline config not found: {config_path}")
+
+    with config_path.open("rb") as f:
+        raw: dict[str, Any] = tomllib.load(f)
+
+    sources = {
+        name: SourceConfig(name=name, **values)
+        for name, values in raw.get("sources", {}).items()
+    }
+
+    return PipelineConfig(sources=sources)
+
+--- src\data_pipeline\utils\logging_setup.py ---
+"""
+Configuration module for application logging setup.
+
+This module provides a custom log formatter and a setup function to initialize
+logging from a TOML configuration file.
+"""
+
+import logging
+import logging.config
+import tomllib
+from pathlib import Path
+from typing import Any, Literal
+
+_PROJECT_ROOT = Path(__file__).resolve().parents[3]
+_DEFAULT_LOGGING_CONFIG = _PROJECT_ROOT / "config" / "logging.toml"
+_LOGS_DIR = _PROJECT_ROOT / "logs"
+
+
+class ConditionalFormatter(logging.Formatter):
+    """Custom formatter that appends dynamically specified extra fields to the log.
+
+    It checks the LogRecord for specified extra fields and appends them to the
+    formatted message if they exist.
+
+    Attributes:
+        extra_fields (List[str]): A list of attribute names to monitor in the LogRecord.
+    """
+
+    def __init__(
+        self,
+        fmt: str | None = None,
+        datefmt: str | None = None,
+        style: Literal["%", "{", "$"] = "%",
+        extra_fields: list[str] | None = None,
+        **kwargs: Any,
+    ) -> None:
+        """Initialize the ConditionalFormatter.
+
+        Args:
+            fmt (str | None): The format string for the log message.
+            datefmt (str | None): The format string for the date/time.
+            style (Literal["%", "{", "$"]): The formatting style. Defaults to "%".
+            extra_fields (list[str] | None): A list of extra field names to append.
+            **kwargs (Any): Additional keyword arguments passed to the base Formatter.
+        """
+        super().__init__(fmt=fmt, datefmt=datefmt, style=style, **kwargs)
+        # Store the fields we want to monitor dynamically
+        self.extra_fields = extra_fields or []
+
+    def format(self, record: logging.LogRecord) -> str:
+        """Format the specified record as text and append extra fields.
+
+        Args:
+            record (logging.LogRecord): The log record to be formatted.
+
+        Returns:
+            str: The fully formatted log message including dynamic extra fields.
+        """
+        # Capture the original exception info
+        original_exc_info = record.exc_info
+        original_exc_text = record.exc_text
+
+        # Temporarily clear the exception info to prevent automatic multi-line traceback printing
+        record.exc_info = None
+        record.exc_text = None
+
+        # Format the base message using standard logic
+        formatted_message = super().format(record)
+
+        # Collect dynamic extra fields
+        extra_parts = []
+        for field in self.extra_fields:
+            if hasattr(record, field):
+                value = getattr(record, field)
+                if value is not None:  # Only add if the value is not None/empty
+                    extra_parts.append(f"[{field}: {value}]")
+
+        # If there was an error, append the info in a clean, single-line format
+        if original_exc_info and original_exc_info[0] is not None:
+            exc_type, exc_value, _ = original_exc_info
+            extra_parts.append(f"[Exception: {exc_type.__name__} - {exc_value}]")
+
+        if extra_parts:
+            formatted_message += " | " + " | ".join(extra_parts)
+
+        # Restore the original exception info to its initial state
+        record.exc_info = original_exc_info
+        record.exc_text = original_exc_text
+
+        return formatted_message
+
+
+def _resolve_log_file_paths(config: dict[str, Any], base_dir: Path) -> None:
+    """Make all relative filename paths in logging handlers absolute.
+
+    Args:
+        config (dict[str, Any]): The parsed logging configuration dictionary.
+        base_dir (Path): The base directory to resolve relative paths against.
+    """
+    for handler_cfg in config.get("handlers", {}).values():
+        if "filename" in handler_cfg:
+            filename = Path(handler_cfg["filename"])
+            if not filename.is_absolute():
+                handler_cfg["filename"] = str(base_dir / filename)
+
+
+def setup_logging(config_path: Path = _DEFAULT_LOGGING_CONFIG) -> None:
+    """Load logging configuration from a TOML file and apply it.
+
+    Args:
+        config_path (Path): The path to the TOML configuration file. Defaults
+            to the project's config/logging.toml.
+
+    Raises:
+        FileNotFoundError: If the configuration file does not exist.
+    """
+    _LOGS_DIR.mkdir(parents=True, exist_ok=True)
+
+    if not config_path.exists():
+        raise FileNotFoundError(f"Logging configuration file not found: {config_path}")
+
+    with config_path.open("rb") as f:
+        config = tomllib.load(f)
+
+    _resolve_log_file_paths(config, _PROJECT_ROOT)
+    logging.config.dictConfig(config)
+
+--- src\data_pipeline\utils\__init__.py ---
+
+

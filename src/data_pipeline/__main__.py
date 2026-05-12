@@ -1,52 +1,67 @@
-"""Entry point for the data pipeline application.
+"""Main entry point for the data pipeline application."""
 
-This module parses CLI arguments, initializes logging, loads the pipeline
-configuration, and triggers the selected ingestion source.
-"""
-
-import argparse
+import sys
 import logging
+import tomllib
+
+from data_pipeline.utils.logging_setup import setup_logging
 
 from data_pipeline.utils.config_loader import load_pipeline_config
-from data_pipeline.utils.logging_setup import setup_logging
 from data_pipeline.ingestion.dummy_ingest import ingest
+from data_pipeline.cli import parse_args
 
 logger = logging.getLogger(__name__)
 
 
-def parse_args() -> argparse.Namespace:
-    """Parse command-line arguments.
+def main() -> int:
+    """Executes the main application flow.
 
     Returns:
-        Parsed argument namespace.
+        int: 0 for successful execution, non-zero exit code for failure.
     """
-    parser = argparse.ArgumentParser(
-        prog="data-pipeline",
-        description="Run the data pipeline for a specified source.",
-        epilog="Thanks for using %(prog)s! :)"
-    )
-    parser.add_argument(
-        "--source",
-        type=str,
-        required=True,
-        help="Data source to ingest (e.g. 'gps', 'gtfs').",
-    )
-    return parser.parse_args()
-
-
-def main() -> None:
-    """Execute the main application flow."""
-
     setup_logging()
 
-    args = parse_args()
-    config = load_pipeline_config()
-    source = config.get_source(args.source)
+    try:
+        config = load_pipeline_config()
+    except FileNotFoundError:
+        logger.critical("Pipeline config missing")
+        return 1
+    except tomllib.TOMLDecodeError:
+        logger.critical("Pipeline config is invalid TOML")
+        return 1
 
-    logger.info("Pipeline started | [source: %s]", source.name)
-    ingest(source)
-    logger.info("Pipeline finished | [source: %s]", source.name)
+    valid_sources = list(config.sources.keys())
+    args = parse_args(valid_sources=valid_sources)
+
+    if args.command == "run":
+        sources_to_run = (
+            [config.sources[args.source]]
+            if args.source
+            else list(config.sources.values())
+        )
+
+        overall_success = True
+
+        for source in sources_to_run:
+            logger.info("Pipeline started", extra={"source": source.name})
+            try:
+                ingest(source)
+            except Exception as e:
+                logger.error(
+                    "Ingestion failed: %s",
+                    e,
+                    extra={"source": source.name},
+                    exc_info=True,
+                )
+                overall_success = False
+            finally:
+                logger.info("Pipeline finished", extra={"source": source.name})
+
+        # Return non-zero exit code if any source failed
+        return 0 if overall_success else 1
+
+    return 0
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())

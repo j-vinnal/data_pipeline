@@ -1,4 +1,5 @@
-"""Configuration module for application logging setup.
+"""
+Configuration module for application logging setup.
 
 This module provides a custom log formatter and a setup function to initialize
 logging from a TOML configuration file.
@@ -67,7 +68,7 @@ class ConditionalFormatter(logging.Formatter):
         formatted_message = super().format(record)
 
         # Collect dynamic extra fields
-        extra_parts = []
+        extra_parts: list[str] = []
         for field in self.extra_fields:
             if hasattr(record, field):
                 value = getattr(record, field)

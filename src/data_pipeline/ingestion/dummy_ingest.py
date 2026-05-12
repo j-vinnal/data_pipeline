@@ -1,8 +1,4 @@
-"""Demonstration module for data ingestion and logging.
-
-This module simulates data ingestion for a given source configuration
-and showcases various logging levels, including exception handling.
-"""
+"""Simulates data ingestion for a given source configuration."""
 
 import logging
 
@@ -12,12 +8,15 @@ logger = logging.getLogger(__name__)
 
 
 def ingest(source: SourceConfig) -> None:
-    """Simulate data ingestion for the given source and emit log records.
-
+    """Simulates downloading and processing data from a given source.
+    
     Args:
-        source: The data source configuration to ingest from.
+        source (SourceConfig): The configuration object for the target data source.
+        
+    Raises:
+        ZeroDivisionError: Raised artificially to simulate an ingestion failure.
     """
-    logger.info("Ingesting source | [url: %s] | [format: %s]", source.url, source.format)
+    logger.info("Ingesting source", extra={"url": source.url, "format": source.format})
 
     donuts = 5
     guests = 0

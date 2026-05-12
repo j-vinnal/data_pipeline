@@ -1,4 +1,5 @@
-"""Pipeline configuration loader.
+"""
+Pipeline configuration loader.
 
 This module loads and validates the pipeline configuration from a TOML file
 and exposes it as typed dataclasses.
@@ -48,13 +49,13 @@ class PipelineConfig:
 
         Returns:
             The matching SourceConfig.
-
+    
         Raises:
-            KeyError: If the source name is not found in the configuration.
+            ValueError: If the source name is not found in the configuration.
         """
         if name not in self.sources:
             available = ", ".join(self.sources)
-            raise KeyError(f"Unknown source '{name}'. Available: {available}")
+            raise ValueError(f"Unknown source '{name}'. Available: {available}")
         return self.sources[name]
 
 
