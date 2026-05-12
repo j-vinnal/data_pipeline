@@ -28,7 +28,9 @@ class BaseIngestor(ABC):
         """Factory method to get the correct ingestor instance."""
         ingestor_class = cls._registry.get(source_config.name)
         if not ingestor_class:
-            raise ValueError(f"No ingestor registered for source: '{source_config.name}'")
+            raise ValueError(
+                f"No ingestor registered for source: '{source_config.name}'"
+            )
         return ingestor_class(source_config)
 
     def __init__(self, source_config: SourceConfig) -> None:
@@ -48,10 +50,14 @@ class BaseIngestor(ABC):
         try:
             raw_data = self.fetch()
             saved_path = self.save(raw_data)
+
+            size_mb = round(len(raw_data) / (1024 * 1024), 2)
             self.logger.info(
-                "Ingestion completed", 
-                extra={"saved_to": str(saved_path), "size_bytes": len(raw_data)}
+                "Ingestion completed",
+                extra={"saved_to": str(saved_path), "size_mb": size_mb},
             )
         except Exception:
-            self.logger.exception("Ingestion failed", extra={"source": self.config.name})
+            self.logger.exception(
+                "Ingestion failed", extra={"source": self.config.name}
+            )
             raise

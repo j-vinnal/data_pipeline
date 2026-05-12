@@ -13,7 +13,6 @@ class GPSIngestor(BaseIngestor, source_name="gps"):
 
     def fetch(self) -> bytes:
         """Fetch GPS text data via HTTP GET."""
-        # Timeout is important to avoid hanging pipelines
         response = requests.get(self.config.url, timeout=10)
         response.raise_for_status()
         return response.content

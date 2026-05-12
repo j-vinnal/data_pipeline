@@ -6,10 +6,10 @@ disable_existing_loggers = false
 [formatters.conditional_formatter]
 # The "()" key tells dictConfig to instantiate a custom class.
 "()" = "data_pipeline.core.logger.ConditionalFormatter"
-fmt = "{asctime}.{msecs:03.0f} | {levelname:<8} | {name:<36} | {funcName:<12}:{lineno} | {message:<18}"
+fmt = "{asctime}.{msecs:03.0f} | {levelname:<8} | {name:<14} | {funcName:<12}:{lineno} | {message:<20}"
 style = "{"
 datefmt = "%Y-%m-%d %H:%M:%S"
-extra_fields = ["file", "rows", "source", "url", "format", "saved_to", "size_bytes"]
+extra_fields = ["file", "rows", "source", "url", "format", "saved_to", "size_mb"]
 
 [handlers.console_handler]
 class = "logging.StreamHandler"
@@ -28,3 +28,9 @@ encoding = "utf-8"
 [root]
 level = "DEBUG"
 handlers = ["console_handler", "file_handler"]
+
+[loggers.urllib3]
+level = "WARNING"
+
+[loggers.requests]
+level = "WARNING"
