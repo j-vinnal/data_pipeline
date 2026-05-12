@@ -69,35 +69,35 @@ def run_daemon(sources_dict: dict[str, SourceConfig], source_name: str | None) -
             current_time_str = now.strftime("%H:%M")
 
             for source in sources_to_run:
-                # 1. Kontrollime, kas oleme lubatud aknas (kui see on defineeritud)
+                # 1. Check if we are within the allowed time window (if defined)
                 if source.window_start and source.window_end:
-                    # Pythoni stringivõrdlus töötab kellaaegade (HH:MM) puhul perfektselt
+                    # Python's string comparison works perfectly for times in HH:MM format
                     if not (
                         source.window_start <= current_time_str <= source.window_end
                     ):
                         continue
 
-                # 2. Kontrollime intervalli
+                # 2. Check the interval
                 last_run_time = last_run[source.name]
                 if last_run_time is not None:
                     elapsed_seconds = (now - last_run_time).total_seconds()
                     if elapsed_seconds < source.interval_seconds:
                         continue
 
-                # 3. Aeg on käes! Tõmbame andmed.
+                # 3. It's time! Fetch the data.
                 logger.info("Scheduled trigger", extra={"source": source.name})
                 try:
                     ingestor = ingestion.BaseIngestor.get_ingestor(source)
                     ingestor.run()
                 except Exception:
-                    # Viga on juba logitud, laseme daemonil lihtsalt edasi töötada
+                    # The error is already logged, let the daemon continue running
                     pass
                 finally:
-                    # Uuendame viimase käivitamise aega hoolimata edust/ebaedust,
-                    # et mitte tekitada lõputut veatsüklit, mis ummistaks logi.
+                    # Update the last run time regardless of success/failure,
+                    # to avoid creating an endless error loop that would spam the logs.
                     last_run[source.name] = datetime.now()
 
-            # Puhkame sekundi ja kordame tsüklit
+            # Sleep for a second and repeat the loop
             time.sleep(1)
 
     except KeyboardInterrupt:
