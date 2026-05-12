@@ -1,0 +1,30 @@
+# logging_config.toml
+
+version = 1
+disable_existing_loggers = false
+
+[formatters.conditional_formatter]
+# The "()" key tells dictConfig to instantiate a custom class [1, 2].
+"()" = "src.data_pipeline.utils.logging_setup.ConditionalFormatter"
+fmt = "{asctime}.{msecs:03.0f} | {levelname:<8} | {name:<21} | {funcName}:{lineno} | {message}"
+style = "{"
+datefmt = "%Y-%m-%d %H:%M:%S"
+extra_fields = ["file", "rows"]
+
+[handlers.console_handler]
+class = "logging.StreamHandler"
+level = "DEBUG"
+formatter = "conditional_formatter"
+stream = "ext://sys.stdout"
+
+[handlers.file_handler]
+class = "logging.FileHandler"
+level = "DEBUG"
+formatter = "conditional_formatter"
+filename = "logs/app.log"
+mode = "a"
+encoding = "utf-8"
+
+[root]
+level = "DEBUG"
+handlers = ["console_handler", "file_handler"]

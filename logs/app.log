@@ -1,0 +1,16 @@
+2026-05-12 10:03:43.492 | INFO     | __main__              | main:29 | Logging demo started
+2026-05-12 10:04:41.054 | INFO     | __main__              | main:29 | Logging demo started
+2026-05-12 10:04:41.060 | DEBUG    | src.data_pipeline.ingestion.dummy_ingest | run:18 | This is a debug message
+2026-05-12 10:04:41.060 | DEBUG    | src.data_pipeline.ingestion.dummy_ingest | run:19 | name=Jüri
+2026-05-12 10:04:41.060 | INFO     | src.data_pipeline.ingestion.dummy_ingest | run:20 | This is an info message
+2026-05-12 10:04:41.061 | INFO     | src.data_pipeline.ingestion.dummy_ingest | run:21 | Data loaded | [file: data.csv] | [rows: 150]
+2026-05-12 10:04:41.061 | WARNING  | src.data_pipeline.ingestion.dummy_ingest | run:22 | This is a warning message
+2026-05-12 10:04:41.065 | ERROR    | src.data_pipeline.ingestion.dummy_ingest | run:23 | This is an error message
+2026-05-12 10:04:41.065 | CRITICAL | src.data_pipeline.ingestion.dummy_ingest | run:24 | This is a critical message
+2026-05-12 10:04:41.065 | ERROR    | src.data_pipeline.ingestion.dummy_ingest | run:32 | An exception occurred while trying to divide by zero.
+Traceback (most recent call last):
+  File "C:\Projects\stuff_25\learn\python\data_pipeline\src\data_pipeline\ingestion\dummy_ingest.py", line 29, in run
+    donuts_per_guest = donuts / guests
+                       ~~~~~~~^~~~~~~~
+ZeroDivisionError: division by zero
+2026-05-12 10:04:41.067 | INFO     | __main__              | main:39 | Logging demo finished
