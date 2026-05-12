@@ -1,0 +1,14 @@
+services:
+  pipeline:
+    build: .
+    container_name: rmk_data_pipeline
+    # Ensures that when the computer is restarted, the script will run again
+    restart: unless-stopped 
+    environment:
+      - TZ=Europe/Tallinn
+    volumes:
+      # Maps Windows directories (left) to container directories (right)
+      - ./data:/app/data
+      - ./logs:/app/logs
+      # To modify the config.toml file without rebuilding the container
+      - ./config:/app/config

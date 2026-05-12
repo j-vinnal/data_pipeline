@@ -71,8 +71,11 @@ class BaseIngestor(ABC):
 
         if target_path.exists() and not self.config.overwrite_existing:
             self.logger.info(
-                "Ingestion skipped: File already exists", 
-                extra={"source": self.config.name, "path": str(target_path.relative_to(PROJECT_ROOT))}
+                "Ingestion skipped: File already exists",
+                extra={
+                    "source": self.config.name,
+                    "path": str(target_path.relative_to(PROJECT_ROOT)),
+                },
             )
             return
 
