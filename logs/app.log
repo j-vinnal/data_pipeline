@@ -1,6 +1,12 @@
-2026-05-12 17:14:02.783 | INFO     | __main__                             | run_pipeline:34 | Pipeline started   | [source: gps, gtfs]
-2026-05-12 17:14:02.785 | INFO     | data_pipeline.ingestion.dummy_ingest | ingest      :19 | Ingesting started  | [source: gps] | [url: https://transport.tallinn.ee/readfile.php?name=gps.txt] | [format: csv]
-2026-05-12 17:14:02.787 | ERROR    | data_pipeline.ingestion.dummy_ingest | ingest      :27 | Ingestion failed   | [Exception: ZeroDivisionError - division by zero]
-2026-05-12 17:14:02.788 | INFO     | data_pipeline.ingestion.dummy_ingest | ingest      :19 | Ingesting started  | [source: gtfs] | [url: https://transport.tallinn.ee/data/gtfs.zip] | [format: zip]
-2026-05-12 17:14:02.791 | ERROR    | data_pipeline.ingestion.dummy_ingest | ingest      :27 | Ingestion failed   | [Exception: ZeroDivisionError - division by zero]
-2026-05-12 17:14:02.796 | INFO     | __main__                             | run_pipeline:45 | Pipeline finished  | [source: gps, gtfs]
+2026-05-12 19:28:05.119 | INFO     | __main__                             | run_pipeline:36 | Pipeline started   | [source: gtfs]
+2026-05-12 19:28:05.120 | INFO     | GTFSIngestor                         | run         :47 | Ingestion started  | [url: https://transport.tallinn.ee/data/gtfs.zip]
+2026-05-12 19:28:05.125 | DEBUG    | urllib3.connectionpool               | _new_conn   :1062 | Starting new HTTPS connection (1): transport.tallinn.ee:443
+2026-05-12 19:28:05.800 | DEBUG    | urllib3.connectionpool               | _make_request:544 | https://transport.tallinn.ee:443 "GET /data/gtfs.zip HTTP/1.1" 200 2640076
+2026-05-12 19:28:06.036 | INFO     | GTFSIngestor                         | run         :51 | Ingestion completed | [saved_to: C:\Projects\stuff_25\learn\python\data_pipeline\data\raw\gtfs_20260512.zip] | [size_bytes: 2640076]
+2026-05-12 19:28:06.048 | INFO     | __main__                             | run_pipeline:49 | Pipeline finished  | [source: gtfs]
+2026-05-12 19:28:49.198 | INFO     | __main__                             | run_pipeline:36 | Pipeline started   | [source: gps]
+2026-05-12 19:28:49.199 | INFO     | GPSIngestor                          | run         :47 | Ingestion started  | [url: https://transport.tallinn.ee/readfile.php?name=gps.txt]
+2026-05-12 19:28:49.204 | DEBUG    | urllib3.connectionpool               | _new_conn   :1062 | Starting new HTTPS connection (1): transport.tallinn.ee:443
+2026-05-12 19:28:49.954 | DEBUG    | urllib3.connectionpool               | _make_request:544 | https://transport.tallinn.ee:443 "GET /readfile.php?name=gps.txt HTTP/1.1" 200 7862
+2026-05-12 19:28:49.963 | INFO     | GPSIngestor                          | run         :51 | Ingestion completed | [saved_to: C:\Projects\stuff_25\learn\python\data_pipeline\data\raw\gps_20260512_192849.csv] | [size_bytes: 22019]
+2026-05-12 19:28:49.969 | INFO     | __main__                             | run_pipeline:49 | Pipeline finished  | [source: gps]

@@ -4,9 +4,10 @@ import sys
 import logging
 import tomllib
 
+from data_pipeline import ingestion
 from data_pipeline.core.logger import setup_logging
 from data_pipeline.core.config import load_pipeline_config, SourceConfig
-from data_pipeline.ingestion.dummy_ingest import ingest
+import data_pipeline.ingestion as ingestion
 from data_pipeline.cli import parse_args
 
 logger = logging.getLogger(__name__)
@@ -37,7 +38,8 @@ def run_pipeline(
 
     for source in sources_to_run:
         try:
-            ingest(source)
+            ingestor = ingestion.BaseIngestor.get_ingestor(source)
+            ingestor.run()
         except (OSError, RuntimeError, ValueError):
             logger.exception("Ingestion failed", extra={"source": source.name})
             overall_success = False
