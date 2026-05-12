@@ -4,7 +4,9 @@ import tomllib
 from pathlib import Path
 from typing import Any, List, Literal, Optional
 
+
 _DEFAULT_LOGGING_CONFIG = Path("config/logging.toml")
+_LOGS_DIR = Path("logs")
 
 
 class ConditionalFormatter(logging.Formatter):
@@ -25,20 +27,20 @@ class ConditionalFormatter(logging.Formatter):
         # Store the fields we want to monitor dynamically
         self.extra_fields = extra_fields or []
 
-    def format(self, record: logging.LogRecord) -> str:
+    def formatMessage(self, record: logging.LogRecord) -> str:
         """
         Format the specified record as text and append extra fields.
         """
         # 1. Format the base message using the parent class logic.
         # This correctly handles timestamps, log levels, messages, and exceptions.
-        formatted_message = super().format(record)
+        formatted_message = super().formatMessage(record)
 
         # 2. Collect extra fields if they exist and have a truthy value.
         extra_parts = []
         for field in self.extra_fields:
             if hasattr(record, field):
                 value = getattr(record, field)
-                if value:  # Only add if the value is not None/empty
+                if value is not None:  # Only add if the value is not None/empty
                     extra_parts.append(f"[{field}: {value}]")
 
         # 3. Append the dynamic extra fields to the main formatted message.
@@ -59,7 +61,7 @@ def setup_logging(config_path: Path = _DEFAULT_LOGGING_CONFIG) -> None:
         FileNotFoundError: If the configuration file is missing.
     """
     # Create the log output directory if it does not exist
-    Path("logs").mkdir(parents=True, exist_ok=True)
+    _LOGS_DIR.mkdir(parents=True, exist_ok=True)
 
     # Read the TOML configuration file and apply settings
     if config_path.exists():
@@ -67,8 +69,6 @@ def setup_logging(config_path: Path = _DEFAULT_LOGGING_CONFIG) -> None:
             config = tomllib.load(f)
         logging.config.dictConfig(config)
     else:
-        logging.basicConfig(level=logging.INFO)
-        logging.warning(
-            "Log configuration file '%s' not found! Using default settings.",
-            config_path,
+        raise FileNotFoundError(
+            f"Logging configuration file not found: {config_path}"
         )

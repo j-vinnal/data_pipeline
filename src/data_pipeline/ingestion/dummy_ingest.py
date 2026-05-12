@@ -1,5 +1,5 @@
 """
-ingestion.py
+dummy_ingest.py
 -----
 Logging demonstration module.
 
@@ -10,7 +10,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-def run() -> None:
+def ingest() -> None:
     """Emit one log record at every standard level, then trigger an exception."""
 
     name = "Jüri"
