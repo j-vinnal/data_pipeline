@@ -7,10 +7,10 @@ def parse_args(valid_sources: list[str]) -> argparse.Namespace:
     """Parse command-line arguments with subparsers.
 
     Args:
-        valid_sources: List of source names from configuration for validation.
+        valid_sources (list[str]): List of source names from configuration for validation.
 
     Returns:
-        Parsed arguments namespace.
+        argparse.Namespace: Parsed arguments namespace.
     """
     parser = argparse.ArgumentParser(
         prog="data-pipeline",
