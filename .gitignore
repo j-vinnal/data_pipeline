@@ -218,8 +218,16 @@ __marimo__/
 .streamlit/secrets.toml
 
 .vscode/
-#data/
+
+# data
+data/
 !data/.gitkeep
+
+# logs
+logs/
+!logs/.gitkeep
+
+
 .obsidian/
 sandbox/
 .idea/

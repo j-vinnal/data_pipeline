@@ -2,11 +2,11 @@
 
 ## Description
 
-A modular, configuration-driven Python data pipeline designed for real-time and scheduled data ingestion. Built to fetch Tallinn public transport data (GPS & GTFS), it serves as a robust boilerplate for various data engineering projects. **Work is still in progress.**
+A modular, configuration-driven, CLI-first python data pipeline designed for real-time and scheduled data ingestion. Built to fetch Tallinn public transport data (GPS & GTFS), it serves as a robust boilerplate for various data engineering projects. **Work is still in progress.**
 
 **Key Features:**
 
-- **Configuration-Driven:** Add or modify data sources via TOML without touching the code.
+- **Configuration-Driven:** Add or modify data sources via TOML.
 - **Idempotency & Partitioning:** Safely downloads data into Hive-style partitioned directories (e.g., `data/raw/source=gps/date=2026-05-12/`).
 - **Structured Logging:** Custom logging format designed for easy debugging and log parsing.
 
@@ -62,7 +62,7 @@ python -m data_pipeline daemon
 
 ## Docker Deployment
 
-For long-running ingestion, deploying with Docker Compose is highly recommended. The container mounts your local `data`, `logs`, and `config` directories, meaning all downloaded files will appear instantly in your Windows/host file system.
+For long-running ingestion, deploying with Docker Compose is highly recommended. The container mounts local `data`, `logs`, and `config` directories, meaning all downloaded files will appeare in Windows/host file system.
 
 ```bash
 # Build the image and start the daemon in the background
@@ -71,7 +71,7 @@ docker-compose up -d --build
 # View real-time logs
 docker-compose logs -f
 
-# Stop the container safely
+# Stop the container
 docker-compose down
 
 ```
@@ -102,3 +102,4 @@ docker-compose restart
 **TODO:**
 
 - [ ] Implement hot-reloading for the daemon mode to re-read the configuration dynamically on every loop without requiring a restart.
+- [ ] Implement cron-style scheduling for data ingestion
