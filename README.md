@@ -39,14 +39,14 @@ Fetch data immediately for the specified sources, completely ignoring the config
 
 ```bash
 # Run all configured sources at once
-python -m data_pipeline run
+python -m data_pipeline ingest
 
 # Run a specific source
-python -m data_pipeline run --source gps
-python -m data_pipeline run --source gtfs
+python -m data_pipeline ingest --source gps
+python -m data_pipeline ingest --source gtfs
 
 # Invalid sources will return a clear error:
-python -m data_pipeline run --source unknown
+python -m data_pipeline ingest --source unknown
 # -> "invalid choice: 'unknown' (choose from 'gps', 'gtfs')"
 
 ```
@@ -103,3 +103,31 @@ docker-compose restart
 
 - [ ] Implement hot-reloading for the daemon mode to re-read the configuration dynamically on every loop without requiring a restart.
 - [ ] Implement cron-style scheduling for data ingestion
+
+## Development dependencies
+
+For local development and testing we include a `dev-requirements.txt` with linters, type checkers and test tools. Install them into your virtual environment:
+
+Windows:
+
+```powershell
+python -m venv .venv
+.venv\Scripts\activate
+pip install -r dev-requirements.txt
+```
+
+macOS / Linux:
+
+```bash
+python -m venv .venv
+source .venv/bin/activate
+pip install -r dev-requirements.txt
+```
+
+Alternative: if you prefer a single-file config, you can add dev extras to `pyproject.toml` under `project.optional-dependencies.dev` and install with:
+
+```bash
+pip install .[dev]
+```
+
+The `dev-requirements.txt` is committed to the repository for quick setup; use whichever workflow fits your tooling.

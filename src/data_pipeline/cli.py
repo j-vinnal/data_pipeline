@@ -23,7 +23,7 @@ def parse_args(valid_sources: list[str]) -> argparse.Namespace:
         required=True,
     )
 
-    run_parser = subparsers.add_parser("run", help="Run data ingestion")
+    run_parser = subparsers.add_parser("ingest", help="Run data ingestion")
     run_parser.add_argument(
         "--source",
         type=str,

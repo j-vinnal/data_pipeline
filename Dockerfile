@@ -15,8 +15,8 @@ RUN pip install --no-cache-dir -e .
 # Create empty data and logs directories to mount local volumes later
 RUN mkdir -p data logs
 
-# Set the timezone to Estonia so the daemon runs at the correct local times
-ENV TZ="Europe/Tallinn"
+# Set the timezone to UTC for consistent system time inside the container
+ENV TZ="UTC"
 
 # Tell Python where the source directory is
 ENV PYTHONPATH="/app/src"

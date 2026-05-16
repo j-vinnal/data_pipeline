@@ -2,7 +2,7 @@
 
 from .base import BaseIngestor
 
-from .gps import GPSIngestor
-from .gtfs import GTFSIngestor
+from .ingest_gps import GPSIngestor
+from .ingest_gtfs import GTFSIngestor
 
 __all__ = ["BaseIngestor", "GPSIngestor", "GTFSIngestor"]

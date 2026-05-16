@@ -1,16 +1,21 @@
 """Main entry point for the data pipeline application."""
 
-from datetime import datetime
-import sys
+import argparse
 import logging
+import sys
 import time
 import tomllib
+from datetime import datetime, timezone
+from pathlib import Path
 
 from data_pipeline import ingestion
-from data_pipeline.core.logger import setup_logging
-from data_pipeline.core.config import load_pipeline_config, SourceConfig
-import data_pipeline.ingestion as ingestion
 from data_pipeline.cli import parse_args
+from data_pipeline.core.config import (
+    SourceConfig,
+    is_now_within_window,
+    load_pipeline_config,
+)
+from data_pipeline.core.logger import setup_logging
 
 logger = logging.getLogger(__name__)
 
@@ -65,16 +70,12 @@ def run_daemon(sources_dict: dict[str, SourceConfig], source_name: str | None) -
 
     try:
         while True:
-            now = datetime.now()
-            current_time_str = now.strftime("%H:%M")
+            now = datetime.now(timezone.utc)
 
             for source in sources_to_run:
                 # 1. Check if we are within the allowed time window (if defined)
                 if source.window_start and source.window_end:
-                    # Python's string comparison works perfectly for times in HH:MM format
-                    if not (
-                        source.window_start <= current_time_str <= source.window_end
-                    ):
+                    if not is_now_within_window(source, now_utc=now):
                         continue
 
                 # 2. Check the interval
@@ -95,7 +96,7 @@ def run_daemon(sources_dict: dict[str, SourceConfig], source_name: str | None) -
                 finally:
                     # Update the last run time regardless of success/failure,
                     # to avoid creating an endless error loop that would spam the logs.
-                    last_run[source.name] = datetime.now()
+                    last_run[source.name] = datetime.now(timezone.utc)
 
             # Sleep for a second and repeat the loop
             time.sleep(1)
@@ -110,10 +111,25 @@ def main() -> int:
     Returns:
         int: 0 for successful execution, non-zero exit code for failure.
     """
-    setup_logging()
+    # Pre-parse to allow overriding config and log config paths
+    pre_parser = argparse.ArgumentParser(add_help=False)
+    pre_parser.add_argument("--config", dest="config", default=None)
+    pre_parser.add_argument("--log-config", dest="log_config", default=None)
+    pre_args, _ = pre_parser.parse_known_args()
+
+    # Resolve config paths (fall back to defaults inside loader/setup)
+    pipeline_config_path = Path(pre_args.config) if pre_args.config else None
+    log_config_path = Path(pre_args.log_config) if pre_args.log_config else None
+
+    # Initialize logging (uses default if log_config_path is None)
+    setup_logging(config_path=log_config_path) if log_config_path else setup_logging()
 
     try:
-        sources_config = load_pipeline_config()
+        sources_config = (
+            load_pipeline_config(pipeline_config_path)
+            if pipeline_config_path
+            else load_pipeline_config()
+        )
     except (FileNotFoundError, tomllib.TOMLDecodeError):
         logger.critical("Pipeline config error")
         return 1
@@ -121,7 +137,7 @@ def main() -> int:
     valid_sources = list(sources_config.keys())
     args = parse_args(valid_sources=valid_sources)
 
-    if args.command == "run":
+    if args.command == "ingest":
         success = run_pipeline(sources_config, args.source)
         return 0 if success else 1
     elif args.command == "daemon":

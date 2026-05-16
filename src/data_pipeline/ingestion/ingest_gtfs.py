@@ -1,6 +1,6 @@
 """Ingestor implementation for GTFS Schedule data."""
 
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 
 import requests
@@ -18,13 +18,7 @@ class GTFSIngestor(BaseIngestor, source_name="gtfs"):
         return response.content
 
     def get_target_path(self) -> Path:
-        timestamp = datetime.now().strftime("%Y%m%d")
+        # Use UTC timestamp and include time to match GPS naming convention
+        timestamp = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S")
         filename = f"{self.config.name}_{timestamp}.{self.config.format}"
         return self.get_save_dir() / filename
-
-    def save(self, data: bytes) -> Path:
-        """Save GTFS data with a daily timestamp."""
-        file_path = self.get_target_path()
-        with file_path.open("wb") as f:
-            f.write(data)
-        return file_path

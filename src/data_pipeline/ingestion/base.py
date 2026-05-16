@@ -1,6 +1,6 @@
 """Abstract base class for data ingestors."""
 
-from datetime import datetime
+from datetime import datetime, timezone
 import logging
 from abc import ABC, abstractmethod
 from pathlib import Path
@@ -39,8 +39,11 @@ class BaseIngestor(ABC):
         self.logger = logging.getLogger(self.__class__.__name__)
 
     def get_save_dir(self) -> Path:
-        """Generates a Hive-style partitioned directory for the current date."""
-        today = datetime.now().strftime("%Y-%m-%d")
+        """Generates a Hive-style partitioned directory for the current UTC date.
+
+        The `date=` partition is derived from UTC to avoid DST/timezone issues.
+        """
+        today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
         # Create directory: data/raw/source=gps/date=2026-05-12/
         dir_path = (
             PROJECT_ROOT
@@ -56,9 +59,16 @@ class BaseIngestor(ABC):
     def fetch(self) -> bytes:
         pass
 
-    @abstractmethod
     def save(self, data: bytes) -> Path:
-        pass
+        """Default save implementation writing raw bytes to the target path.
+
+        Subclasses may override if special handling is required.
+        """
+        target = self.get_target_path()
+        target.parent.mkdir(parents=True, exist_ok=True)
+        with target.open("wb") as f:
+            f.write(data)
+        return target
 
     @abstractmethod
     def get_target_path(self) -> Path:

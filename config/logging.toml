@@ -17,17 +17,20 @@ level = "DEBUG"
 formatter = "conditional_formatter"
 stream = "ext://sys.stdout"
 
-[handlers.file_handler]
-class = "logging.FileHandler"
+[handlers.timed_file_handler]
+class = "logging.handlers.TimedRotatingFileHandler"
 level = "DEBUG"
 formatter = "conditional_formatter"
-filename = "logs/app.log"
-mode = "a"
+filename = "logs/pipeline.log"
+when = "midnight"
+interval = 1
+backupCount = 30
+utc = true
 encoding = "utf-8"
 
 [root]
 level = "DEBUG"
-handlers = ["console_handler", "file_handler"]
+handlers = ["console_handler", "timed_file_handler"]
 
 [loggers.urllib3]
 level = "WARNING"

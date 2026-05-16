@@ -2,14 +2,13 @@
 
 import logging
 import logging.config
+import time
 import tomllib
 from pathlib import Path
 from typing import Any, Literal
 
 from data_pipeline import PROJECT_ROOT
-
-_DEFAULT_LOG_CONFIG = PROJECT_ROOT / "config" / "logging.toml"
-_LOGS_DIR = PROJECT_ROOT / "logs"
+from data_pipeline.constants import DEFAULT_LOG_CONFIG, LOGS_DIR
 
 
 class ConditionalFormatter(logging.Formatter):
@@ -100,17 +99,22 @@ def _resolve_log_file_paths(config: dict[str, Any], base_dir: Path) -> None:
                 handler_cfg["filename"] = str(base_dir / filename)
 
 
-def setup_logging(config_path: Path = _DEFAULT_LOG_CONFIG) -> None:
+def setup_logging(config_path: Path = DEFAULT_LOG_CONFIG, log_dir: Path = LOGS_DIR) -> None:
     """Load logging configuration from a TOML file and apply it.
 
     Args:
         config_path (Path): The path to the TOML configuration file. Defaults
             to the project's config/logging.toml.
+        log_dir (Path): The directory where log files will be stored. Defaults
+            to the project's logs/ directory.
 
     Raises:
         FileNotFoundError: If the configuration file does not exist.
     """
-    _LOGS_DIR.mkdir(parents=True, exist_ok=True)
+    log_dir.mkdir(parents=True, exist_ok=True)
+
+    # Ensure logging times are in UTC
+    logging.Formatter.converter = time.gmtime
 
     if not config_path.exists():
         raise FileNotFoundError(f"Logging configuration file not found: {config_path}")
@@ -120,3 +124,6 @@ def setup_logging(config_path: Path = _DEFAULT_LOG_CONFIG) -> None:
 
     _resolve_log_file_paths(config, PROJECT_ROOT)
     logging.config.dictConfig(config)
+
+    # Handlers (including timed rotating file handler) are configured via dictConfig
+    # If additional programmatic handlers are desired they can be added here.
